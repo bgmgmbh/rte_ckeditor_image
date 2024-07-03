@@ -17,6 +17,7 @@ import { Core, UI, Engine } from '@typo3/ckeditor5-bundle.js';
 import { default as Modal } from '@typo3/backend/modal.js';
 import $ from 'jquery';
 
+let doubleClickedElement = null;
 
 class DoubleClickObserver extends Engine.DomEventObserver {
     constructor(view) {
@@ -26,6 +27,7 @@ class DoubleClickObserver extends Engine.DomEventObserver {
     }
 
     onDomEvent(domEvent) {
+        doubleClickedElement = domEvent.target;
         this.fire(domEvent.type, domEvent);
     }
 }
@@ -200,11 +202,12 @@ function getImageDialog(editor, img, attributes) {
         )
     );
 
+    /*
     $inputCssClass
         .prependTo(
             $('<div class="form-group">').prependTo($customRowCol2)
         )
-        .before($('<label for="input-cssclass">').text(img.lang.cssClass));
+        .before($('<label for="input-cssclass">').text(img.lang.cssClass));*/
 
     $customRow.append($customRowCol1, $customRowCol2);
 
@@ -396,8 +399,6 @@ function edit(selectedImage, editor, imageAttributes) {
         .then(function (attributes) {
 
             editor.model.change(writer => {
-                console.log(attributes);
-
                 const newImage = writer.createElement('typo3image', {
                     fileUid: attributes.fileUid,
                     fileTable: attributes.fileTable,
@@ -427,7 +428,7 @@ export default class Typo3Image extends Core.Plugin {
 
         editor.model.schema.register('typo3image', {
             inheritAllFrom: '$blockObject',
-            allowIn: ['$text', '$block'],
+            allowIn: '$text',
             allowAttributes: [
                 'src',
                 'fileUid',
@@ -564,28 +565,22 @@ export default class Typo3Image extends Core.Plugin {
         });
 
         editor.listenTo(editor.editing.view.document, 'dblclick', (event, data) => {
-            const modelElement = editor.editing.mapper.toModelElement(data.target);
-            if (modelElement && modelElement.name === 'typo3image') {
-                // Select the clicked element
-                editor.model.change(writer => {
-                    writer.setSelection(modelElement, 'on');
-                });
-
+            var parent = doubleClickedElement.parentNode;
+            if (doubleClickedElement && parent && parent.dataset.htmlareaFileUid != undefined) {
                 edit(
                     {
-                        uid: modelElement.getAttribute('fileUid'),
-                        table: modelElement.getAttribute('fileTable'),
+                        uid: parent.dataset.htmlareaFileUid,
+                        table: parent.dataset.htmlareaFileTable,
                     },
                     editor,
                     {
-                        width: modelElement.getAttribute('width'),
-                        height: modelElement.getAttribute('height'),
-                        class: selectedElement.getAttribute('class'),
-                        alt: modelElement.getAttribute('alt'),
-                        title: modelElement.getAttribute('title'),
-                        'data-htmlarea-zoom': modelElement.getAttribute('enableZoom'),
-                        'data-title-override': modelElement.getAttribute('titleOverride'),
-                        'data-alt-override': modelElement.getAttribute('altOverride'),
+                        width: doubleClickedElement.width,
+                        height: doubleClickedElement.height,
+                        alt: doubleClickedElement.alt,
+                        title: parent.title,
+                        'data-htmlarea-zoom': parent.dataset.htmlareaZoom,
+                        'data-title-override': parent.dataset.titleOverride,
+                        'data-alt-override': parent.dataset.altOverride,
                     }
                 );
             }
