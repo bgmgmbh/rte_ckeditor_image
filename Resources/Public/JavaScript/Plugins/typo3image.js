@@ -185,13 +185,18 @@ function getImageDialog(editor, img, attributes) {
         });
     });
 
+    var selected = '';
+    var cssClass = attributes.class || '';
+    if(cssClass === 'img-all-rwd'){
+        selected = ' selected="selected"';
+    }
+
     var $checkboxTitle = d.$el.find('#checkbox-title'),
         $checkboxAlt = d.$el.find('#checkbox-alt'),
         $inputWidth = d.$el.find('#rteckeditorimage-width'),
         $inputHeight = d.$el.find('#rteckeditorimage-height'),
         $zoom = $('<input id="checkbox-zoom" type="checkbox">'),
-        cssClass = attributes.class || '',
-        $inputCssClass = $('<input id="input-cssclass" type="text" class="form-control">').val(cssClass),
+        $inputCssClass = $('<select id="input-cssclass"><option value=""></option><option ' + selected + ' value="img-all-rwd">img-rwd-all</option></select>'),
         $customRow = $('<div class="row">').insertAfter($rows[0]),
         $customRowCol1 = $('<div class="col-xs-12 col-sm-6">'),
         $customRowCol2 = $('<div class="col-xs-12 col-sm-6">');
@@ -202,12 +207,11 @@ function getImageDialog(editor, img, attributes) {
         )
     );
 
-    /*
     $inputCssClass
         .prependTo(
             $('<div class="form-group">').prependTo($customRowCol2)
         )
-        .before($('<label for="input-cssclass">').text(img.lang.cssClass));*/
+        .before($('<label for="input-cssclass" style="padding-right: 5px;">').text(img.lang.cssClass + ' '));
 
     $customRow.append($customRowCol1, $customRowCol2);
 
@@ -566,6 +570,11 @@ export default class Typo3Image extends Core.Plugin {
 
         editor.listenTo(editor.editing.view.document, 'dblclick', (event, data) => {
             var parent = doubleClickedElement.parentNode;
+            var cssClass = '';
+            if(parent.classList.contains('img-all-rwd')){
+                cssClass = 'img-all-rwd';
+            }
+
             if (doubleClickedElement && parent && parent.dataset.htmlareaFileUid != undefined) {
                 edit(
                     {
@@ -578,6 +587,7 @@ export default class Typo3Image extends Core.Plugin {
                         height: doubleClickedElement.getAttribute('height'),
                         alt: doubleClickedElement.alt,
                         title: parent.title,
+                        'class': cssClass,
                         'data-htmlarea-zoom': parent.dataset.htmlareaZoom,
                         'data-title-override': parent.dataset.titleOverride,
                         'data-alt-override': parent.dataset.altOverride,
