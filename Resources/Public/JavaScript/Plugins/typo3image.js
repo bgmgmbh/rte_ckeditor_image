@@ -574,8 +574,8 @@ export default class Typo3Image extends Core.Plugin {
                     },
                     editor,
                     {
-                        width: doubleClickedElement.width,
-                        height: doubleClickedElement.height,
+                        width: doubleClickedElement.getAttribute('width'),
+                        height: doubleClickedElement.getAttribute('height'),
                         alt: doubleClickedElement.alt,
                         title: parent.title,
                         'data-htmlarea-zoom': parent.dataset.htmlareaZoom,
