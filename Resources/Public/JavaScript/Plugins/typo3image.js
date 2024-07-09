@@ -196,7 +196,7 @@ function getImageDialog(editor, img, attributes) {
         $inputWidth = d.$el.find('#rteckeditorimage-width'),
         $inputHeight = d.$el.find('#rteckeditorimage-height'),
         $zoom = $('<input id="checkbox-zoom" type="checkbox">'),
-        $inputCssClass = $('<select id="input-cssclass"><option value=""></option><option ' + selected + ' value="img-all-rwd">img-rwd-all</option></select>'),
+        $inputCssClass = $('<select id="input-cssclass"><option value=""></option><option ' + selected + ' value="img-all-rwd">img-full-width</option></select>'),
         $customRow = $('<div class="row">').insertAfter($rows[0]),
         $customRowCol1 = $('<div class="col-xs-12 col-sm-6">'),
         $customRowCol2 = $('<div class="col-xs-12 col-sm-6">');
